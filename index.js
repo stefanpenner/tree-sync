@@ -12,6 +12,8 @@ function TreeSync(input, output) {
   this._input = input;
   this._output = output;
   this._lastInput = FSTree.fromEntries([]);
+
+  debug('initializing TreeSync:  %s -> %s', this._input, this._output);
 }
 
 TreeSync.prototype.sync = function() {
