@@ -111,8 +111,6 @@ describe('TreeSync', function() {
 
         // build a new `TreeSync` that does not have `lastInput` populated
         treeSync = new TreeSync(__dirname + '/fixtures/', tmp);
-
-        treeSync.sync();
       });
 
       afterEach(function() {
@@ -120,6 +118,8 @@ describe('TreeSync', function() {
       });
 
       it('should update changed files on initial build', function() {
+        treeSync.sync();
+
         var afterTree = walkSync.entries(tmp);
 
         // tree should be updated with OMG in one/foo.txt
@@ -132,6 +132,36 @@ describe('TreeSync', function() {
         treeSync.sync();
 
         expect(afterTree).to.deep.equal(walkSync.entries(tmp));
+      });
+
+      it('should only update the changed file', function(done) {
+        // granularity of HSF+ mtimes is 1 second
+        // so we must wait 1000ms to ensure mtimes would be
+        // mismatched below
+        setTimeout(function() {
+          treeSync.sync();
+
+          var afterTree = walkSync.entries(tmp);
+
+          // tree should be updated with OMG in one/foo.txt
+          expect(initialTree).to.not.deep.equal(afterTree);
+
+          for (var i = 0; i < initialTree.length; i++) {
+            var initialTreeEntry = initialTree[i];
+            var afterTreeEntry = afterTree[i];
+
+            if (initialTreeEntry.relativePath === 'one/foo.txt') {
+              // should not match
+            } else {
+              expect(initialTreeEntry).to.eql(afterTreeEntry);
+            }
+          }
+          // sync again to ensure stablity after synced
+          treeSync.sync();
+
+          expect(afterTree).to.deep.equal(walkSync.entries(tmp));
+          done();
+        }, 1000);
       });
     });
 
