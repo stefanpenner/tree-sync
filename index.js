@@ -11,6 +11,7 @@ module.exports = TreeSync;
 function TreeSync(input, output) {
   this._input = input;
   this._output = output;
+  this._hasSynced = false;
   this._lastInput = FSTree.fromEntries([]);
 
   debug('initializing TreeSync:  %s -> %s', this._input, this._output);
@@ -27,8 +28,13 @@ TreeSync.prototype.sync = function() {
 
   debug('walked %s %dms and  %s %dms', this._input, input.size, this._output, output.size);
 
+  var isFirstSync = !this._hasSynced;
   var operations = output.calculatePatch(input).filter(function(operation) {
-    return operation[0] !== 'change';
+    if (operation[0] === 'change') {
+      return isFirstSync;
+    } else {
+      return true;
+    }
   });
 
   var inputOperations = this._lastInput.calculatePatch(input).filter(function(operation) {
@@ -64,5 +70,6 @@ TreeSync.prototype.sync = function() {
     }
   }, this);
 
+  this._hasSynced = true;
   debug('applied patches: %d', operations.length);
 };
