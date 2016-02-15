@@ -93,6 +93,48 @@ describe('TreeSync', function() {
       });
     });
 
+    describe('output populated -> input with a changed file', function() {
+      var changeFilePath = __dirname + '/fixtures/one/foo.txt';
+      var originalValue, initialTree;
+
+      beforeEach(function() {
+        originalValue = fs.readFileSync(changeFilePath, { encoding: 'utf8' });
+
+        // populate tmp simulating a pre-existing output
+        treeSync.sync();
+
+        // grab state of `tmp` after initial sync
+        initialTree = walkSync.entries(tmp);
+
+        // change a file in the input tree
+        fs.writeFileSync(changeFilePath, 'OMG');
+
+        // build a new `TreeSync` that does not have `lastInput` populated
+        treeSync = new TreeSync(__dirname + '/fixtures/', tmp);
+
+        treeSync.sync();
+      });
+
+      afterEach(function() {
+        originalValue = fs.writeFileSync(changeFilePath, originalValue, { encoding: 'utf8' });
+      });
+
+      it('should update changed files on initial build', function() {
+        var afterTree = walkSync.entries(tmp);
+
+        // tree should be updated with OMG in one/foo.txt
+        expect(initialTree).to.not.deep.equal(afterTree);
+
+        var contents = fs.readFileSync(tmp + '/one/foo.txt', { encoding: 'utf8'} );
+        expect(contents).to.equal('OMG');
+
+        // sync again to ensure stablity after synced
+        treeSync.sync();
+
+        expect(afterTree).to.deep.equal(walkSync.entries(tmp));
+      });
+    });
+
     describe('input(same) -> input(same - file)', function() {
       var removedFilePath = __dirname + '/fixtures/one/foo.txt';
       var removedFileContent = fs.readFileSync(removedFilePath);
