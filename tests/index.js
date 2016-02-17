@@ -29,10 +29,10 @@ describe('TreeSync', function() {
         treeSync.sync();
 
         expect(walkSync(tmp)).to.deep.equal([
-            'one/',
-            'one/bar/',
-            'one/bar/bar.txt',
-            'one/foo.txt',
+          'one/',
+          'one/bar/',
+          'one/bar/bar.txt',
+          'one/foo.txt'
         ]);
       });
     });
