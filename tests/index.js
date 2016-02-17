@@ -37,6 +37,23 @@ describe('TreeSync', function() {
       });
     });
 
+    describe('existing empty directory -> populated', function() {
+      it('file content', function() {
+        expect(walkSync(tmp)).to.deep.equal([]);
+
+        fs.mkdirSync(tmp + '/one');
+
+        treeSync.sync();
+
+        expect(walkSync(tmp)).to.deep.equal([
+          'one/',
+          'one/bar/',
+          'one/bar/bar.txt',
+          'one/foo.txt'
+        ]);
+      });
+    });
+
     describe('input(same) -> input(same)', function() {
       beforeEach(function() {
         treeSync.sync(); // setup initial
