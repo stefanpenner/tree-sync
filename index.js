@@ -23,7 +23,7 @@ TreeSync.prototype.sync = function() {
 
   debug('syncing %s -> %s', this._input, this._output);
 
-  var input = FSTree.fromEntries(walkSync.entries(this._input))
+  var input = FSTree.fromEntries(walkSync.entries(this._input));
   var output = FSTree.fromEntries(walkSync.entries(this._output));
 
   debug('walked %s %dms and  %s %dms', this._input, input.size, this._output, output.size);
