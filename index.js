@@ -60,9 +60,19 @@ TreeSync.prototype.sync = function() {
       case 'change' :
         return fs.writeFileSync(outputFullpath, fs.readFileSync(inputFullpath));
       case 'mkdir' :
-        return fs.mkdirSync(outputFullpath);
+        try {
+          return fs.mkdirSync(outputFullpath);
+        } catch(e) {
+          if (e && e.code === 'EXISTS') { /* do nothing */ }
+          else { throw e; }
+        }
       case 'unlink':
-        return fs.unlinkSync(outputFullpath);
+        try {
+          return fs.unlinkSync(outputFullpath);
+        } catch(e) {
+          if (e && e.code === 'ENOENT') { /* do nothing */ }
+          else { throw e; }
+        }
       case 'rmdir':
         return fs.rmdir(outputFullpath);
       default:
