@@ -63,7 +63,7 @@ TreeSync.prototype.sync = function() {
         try {
           return fs.mkdirSync(outputFullpath);
         } catch(e) {
-          if (e && e.code === 'EXISTS') { /* do nothing */ }
+          if (e && e.code === 'EEXIST') { /* do nothing */ }
           else { throw e; }
         }
       case 'unlink':
