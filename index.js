@@ -66,6 +66,7 @@ TreeSync.prototype.sync = function() {
           if (e && e.code === 'EEXIST') { /* do nothing */ }
           else { throw e; }
         }
+        break;
       case 'unlink':
         try {
           return fs.unlinkSync(outputFullpath);
@@ -73,6 +74,7 @@ TreeSync.prototype.sync = function() {
           if (e && e.code === 'ENOENT') { /* do nothing */ }
           else { throw e; }
         }
+        break;
       case 'rmdir':
         return fs.rmdir(outputFullpath);
       default:
