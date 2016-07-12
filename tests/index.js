@@ -4,6 +4,11 @@ var quickTemp = require('quick-temp');
 var walkSync = require('walk-sync');
 var fs = require('fs');
 
+function expectMode(entry, prop,  mode) {
+  if (process.platform === 'win32') { return; }
+  expect(entry).to.have.deep.property(prop, mode);
+}
+
 describe('TreeSync', function() {
   var tmp;
 
@@ -101,7 +106,7 @@ describe('TreeSync', function() {
           return entry['relativePath'] === 'one/added-file.js';
         })[0];
 
-        expect(addedEntry).to.have.property('mode', 33152);
+        expectMode(addedEntry, 'mode', 33152);
         expect(addedEntry).to.have.property('relativePath', 'one/added-file.js');
 
         treeSync.sync();
@@ -170,13 +175,14 @@ describe('TreeSync', function() {
         var entries = walkSync.entries(tmp);
 
         expect(entries).to.have.deep.property('0.relativePath', 'one/');
-        expect(entries).to.have.deep.property('0.mode', 16877);
+
+        expectMode(entries, '0.mode', 16877);
 
         expect(entries).to.have.deep.property('1.relativePath', 'one/bar/');
-        expect(entries).to.have.deep.property('1.mode', 16877);
+        expectMode(entries, '1.mode', 16877);
 
         expect(entries).to.have.deep.property('2.relativePath', 'one/bar/bar.txt');
-        expect(entries).to.have.deep.property('2.mode', 33188);
+        expectMode(entries, '2.mode', 33188);
 
         expect(entries.length).to.eql(3);
       });
