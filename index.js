@@ -50,15 +50,16 @@ TreeSync.prototype.sync = function() {
   operations.forEach(function(patch) {
     var operation = patch[0];
     var pathname = patch[1];
+    var entry = patch[2];
 
     var inputFullpath = this._input + '/' + pathname;
     var outputFullpath = this._output + '/' + pathname;
 
     switch(operation) {
       case 'create' :
-        return fs.writeFileSync(outputFullpath, fs.readFileSync(inputFullpath));
+        return fs.writeFileSync(outputFullpath, fs.readFileSync(inputFullpath), { mode: entry.mode });
       case 'change' :
-        return fs.writeFileSync(outputFullpath, fs.readFileSync(inputFullpath));
+        return fs.writeFileSync(outputFullpath, fs.readFileSync(inputFullpath), { mode: entry.mode });
       case 'mkdir' :
         try {
           return fs.mkdirSync(outputFullpath);

@@ -89,7 +89,7 @@ describe('TreeSync', function() {
 
         expect(beforeTree.length).to.eql(4);
 
-        fs.writeFileSync(newFilePath, 'OMG'); // add file
+        fs.writeFileSync(newFilePath, 'OMG', { mode: 33152 } ); // add file
         treeSync.sync();
 
         var afterTree = walkSync.entries(tmp);
@@ -101,7 +101,7 @@ describe('TreeSync', function() {
           return entry['relativePath'] === 'one/added-file.js';
         })[0];
 
-        expect(addedEntry).to.have.property('mode', 33188);
+        expect(addedEntry).to.have.property('mode', 33152);
         expect(addedEntry).to.have.property('relativePath', 'one/added-file.js');
 
         treeSync.sync();
