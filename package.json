@@ -18,6 +18,7 @@
   "license": "ISC",
   "dependencies": {
     "fs-tree-diff": "^0.5.0",
+    "debug": "^2.2.0",
     "mkdirp": "^0.5.1",
     "quick-temp": "^0.1.5",
     "walk-sync": "^0.2.7"
