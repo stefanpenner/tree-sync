@@ -77,7 +77,7 @@ TreeSync.prototype.sync = function() {
         }
         break;
       case 'rmdir':
-        return fs.rmdir(outputFullpath);
+        return fs.rmdirSync(outputFullpath);
       default:
         throw TypeError('Unknown operation:' + operation + ' on path: ' + pathname);
     }

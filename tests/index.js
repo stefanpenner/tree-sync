@@ -59,6 +59,41 @@ describe('TreeSync', function() {
       });
     });
 
+
+    describe('rmdir operation is sync', function() {
+      var newFolderPath = __dirname + '/fixtures/two';
+
+      beforeEach(function() {
+        fs.mkdirSync(newFolderPath);
+        treeSync.sync(); // setup initialk
+      });
+
+      beforeEach(function() {
+        fs.rmdirSync(newFolderPath);
+      });
+
+      it('immediately reflects deletions', function() {
+        var beforeTree = walkSync(tmp);
+        expect(beforeTree).to.deep.equal([
+          'one/',
+          'one/bar/',
+          'one/bar/bar.txt',
+          'one/foo.txt',
+          'two/'
+        ]);
+
+        treeSync.sync();
+        var afterTree = walkSync(tmp);
+
+        expect(afterTree).to.deep.equal([
+          'one/',
+          'one/bar/',
+          'one/bar/bar.txt',
+          'one/foo.txt'
+        ]);
+      });
+    });
+
     describe('input(same) -> input(same)', function() {
       beforeEach(function() {
         treeSync.sync(); // setup initial
