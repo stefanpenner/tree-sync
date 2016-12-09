@@ -113,6 +113,23 @@ describe('TreeSync', function() {
       });
     });
 
+    describe('.sync', function() {
+      it('returns a list of changed files', function() {
+        var beforeTree = walkSync.entries(tmp);
+
+        expect(beforeTree.length).to.eql(0);
+
+        var changes = treeSync.sync();
+
+        expect(changes).to.eql([
+          ['mkdir',   'one/'],
+          ['mkdir',   'one/bar/'],
+          ['create',  'one/bar/bar.txt'],
+          ['create',  'one/foo.txt']
+        ]);
+      });
+    });
+
     describe('input(same) -> input(same + newFile)', function() {
       var newFilePath = __dirname + '/fixtures/one/added-file.js';
 

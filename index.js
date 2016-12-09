@@ -85,4 +85,9 @@ TreeSync.prototype.sync = function() {
 
   this._hasSynced = true;
   debug('applied patches: %d', operations.length);
+
+  // Return only type and name; don't want downstream relying on entries.
+  return operations.map(function (op) {
+    return op.slice(0,2);
+  });
 };
