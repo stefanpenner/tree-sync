@@ -62,7 +62,7 @@ TreeSync.prototype.sync = function() {
         return fs.writeFileSync(outputFullpath, fs.readFileSync(inputFullpath), { mode: entry.mode });
       case 'mkdir' :
         try {
-          return fs.mkdirSync(outputFullpath);
+          return mkdirp.sync(outputFullpath);
         } catch(e) {
           if (e && e.code === 'EEXIST') { /* do nothing */ }
           else { throw e; }
