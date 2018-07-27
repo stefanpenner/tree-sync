@@ -226,15 +226,15 @@ describe('TreeSync', function() {
       it('has stable output (mtime, size, mode, relativePath)', function() {
         var entries = walkSync.entries(tmp);
 
-        expect(entries).to.have.deep.property('0.relativePath', 'one/');
+        expect(entries[0]).to.have.deep.property('relativePath', 'one/');
 
-        expectMode(entries, '0.mode', 16877);
+        expectMode(entries[0], 'mode', 16877);
 
-        expect(entries).to.have.deep.property('1.relativePath', 'one/bar/');
-        expectMode(entries, '1.mode', 16877);
+        expect(entries[1]).to.have.deep.property('relativePath', 'one/bar/');
+        expectMode(entries[1], 'mode', 16877);
 
-        expect(entries).to.have.deep.property('2.relativePath', 'one/bar/bar.txt');
-        expectMode(entries, '2.mode', 33188);
+        expect(entries[2]).to.have.deep.property('relativePath', 'one/bar/bar.txt');
+        expectMode(entries[2], 'mode', 33188);
 
         expect(entries.length).to.eql(3);
       });
