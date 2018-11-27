@@ -40,13 +40,13 @@ export default class TreeSync {
    *
    * @param inputPath    The originating path to sync contents from.
    * @param outputPath   The resulting path to sync contents to.
-   * @param walkSyncOpts Options that will be passed verbatim to walk-sync. Use this to selectively choose
-   *                     or ignore directories to sync.
+   * @param treeSyncOpts Options on how to run tree-sync. Use this to selectively choose or ignore directories
+   *                     to sync.
    */
-  constructor(inputPath: string, outputPath: string, walkSyncOpts?: TreeSyncOptions);
+  constructor(inputPath: string, outputPath: string, treeSyncOpts?: TreeSyncOptions);
 
   /**
-   * Syncs the input directory to the output directory. Work is done in sync.
+   * Syncs the input directory to the output directory. File I/O is done synchronously.
    */
   sync(): TreeSyncResult[];
 }
