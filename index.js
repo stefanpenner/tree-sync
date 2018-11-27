@@ -8,11 +8,21 @@ var debug = require('debug')('tree-sync');
 
 module.exports = TreeSync;
 
-function TreeSync(input, output) {
+function TreeSync(input, output, options) {
   this._input = input;
   this._output = output;
+  this._options = options || {};
+  this._walkSyncOpts = {};
   this._hasSynced = false;
   this._lastInput = FSTree.fromEntries([]);
+
+  // Pass through whitelisted options to walk-sync.
+  if (this._options.globs) {
+    this._walkSyncOpts.globs = options.globs;
+  }
+  if (this._options.ignore) {
+    this._walkSyncOpts.ignore = options.ignore;
+  }
 
   debug('initializing TreeSync:  %s -> %s', this._input, this._output);
 }
@@ -23,8 +33,8 @@ TreeSync.prototype.sync = function() {
 
   debug('syncing %s -> %s', this._input, this._output);
 
-  var input = FSTree.fromEntries(walkSync.entries(this._input));
-  var output = FSTree.fromEntries(walkSync.entries(this._output));
+  var input = FSTree.fromEntries(walkSync.entries(this._input, this._walkSyncOpts));
+  var output = FSTree.fromEntries(walkSync.entries(this._output, this._walkSyncOpts));
 
   debug('walked %s %dms and  %s %dms', this._input, input.size, this._output, output.size);
 

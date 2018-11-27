@@ -58,15 +58,15 @@ async@~0.2.6:
   version "0.2.10"
   resolved "https://registry.npmjs.org/async/-/async-0.2.10.tgz#b6bbe0b0674b9d719708ca38de8c237cb526c3d1"
 
-balanced-match@^0.4.1:
-  version "0.4.2"
-  resolved "https://registry.npmjs.org/balanced-match/-/balanced-match-0.4.2.tgz#cb3f3e3c732dc0f01ee70b403f302e61d7709838"
+balanced-match@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/balanced-match/-/balanced-match-1.0.0.tgz#89b4d199ab2bee49de164ea02b89ce462d71b767"
 
-brace-expansion@^1.0.0:
-  version "1.1.6"
-  resolved "https://registry.npmjs.org/brace-expansion/-/brace-expansion-1.1.6.tgz#7197d7eaa9b87e648390ea61fc66c84427420df9"
+brace-expansion@^1.0.0, brace-expansion@^1.1.7:
+  version "1.1.11"
+  resolved "https://registry.yarnpkg.com/brace-expansion/-/brace-expansion-1.1.11.tgz#3c7fcbf529d87226f3d2f52b966ff5271eb441dd"
   dependencies:
-    balanced-match "^0.4.1"
+    balanced-match "^1.0.0"
     concat-map "0.0.1"
 
 camelcase@^1.0.2:
@@ -134,7 +134,7 @@ commander@2.3.0:
 
 concat-map@0.0.1:
   version "0.0.1"
-  resolved "https://registry.npmjs.org/concat-map/-/concat-map-0.0.1.tgz#d8a96bd77fd68df7793a73036a3ba0d5405d477b"
+  resolved "https://registry.yarnpkg.com/concat-map/-/concat-map-0.0.1.tgz#d8a96bd77fd68df7793a73036a3ba0d5405d477b"
 
 concat-stream@^1.4.6:
   version "1.5.2"
@@ -205,7 +205,7 @@ doctrine@^0.7.1:
 
 ensure-posix-path@^1.0.0:
   version "1.0.2"
-  resolved "https://registry.npmjs.org/ensure-posix-path/-/ensure-posix-path-1.0.2.tgz#a65b3e42d0b71cfc585eb774f9943c8d9b91b0c2"
+  resolved "https://registry.yarnpkg.com/ensure-posix-path/-/ensure-posix-path-1.0.2.tgz#a65b3e42d0b71cfc585eb774f9943c8d9b91b0c2"
 
 es5-ext@^0.10.7, es5-ext@^0.10.8, es5-ext@~0.10.11, es5-ext@~0.10.2, es5-ext@~0.10.7:
   version "0.10.12"
@@ -810,8 +810,8 @@ lru-cache@2:
   resolved "https://registry.npmjs.org/lru-cache/-/lru-cache-2.7.3.tgz#6d4524e8b955f95d4f5b58851ce21dd72fb4e952"
 
 matcher-collection@^1.0.0:
-  version "1.0.4"
-  resolved "https://registry.npmjs.org/matcher-collection/-/matcher-collection-1.0.4.tgz#2f66ae0869996f29e43d0b62c83dd1d43e581755"
+  version "1.0.5"
+  resolved "https://registry.yarnpkg.com/matcher-collection/-/matcher-collection-1.0.5.tgz#2ee095438372cb8884f058234138c05c644ec339"
   dependencies:
     minimatch "^3.0.2"
 
@@ -822,11 +822,17 @@ minimatch@0.3:
     lru-cache "2"
     sigmund "~1.0.0"
 
-"minimatch@2 || 3", minimatch@^3.0.0, minimatch@^3.0.2:
+"minimatch@2 || 3", minimatch@^3.0.0:
   version "3.0.3"
   resolved "https://registry.npmjs.org/minimatch/-/minimatch-3.0.3.tgz#2a4e4090b96b2db06a9d7df01055a62a77c9b774"
   dependencies:
     brace-expansion "^1.0.0"
+
+minimatch@^3.0.2:
+  version "3.0.4"
+  resolved "https://registry.yarnpkg.com/minimatch/-/minimatch-3.0.4.tgz#5166e286457f03306064be5497e8dbb0c3d32083"
+  dependencies:
+    brace-expansion "^1.1.7"
 
 minimist@0.0.8, minimist@~0.0.1:
   version "0.0.8"
@@ -1134,9 +1140,9 @@ util-deprecate@~1.0.1:
   version "1.0.2"
   resolved "https://registry.npmjs.org/util-deprecate/-/util-deprecate-1.0.2.tgz#450d4dc9fa70de732762fbd2d4a28981419a0ccf"
 
-walk-sync@^0.2.7:
-  version "0.2.7"
-  resolved "https://registry.npmjs.org/walk-sync/-/walk-sync-0.2.7.tgz#b49be4ee6867657aeb736978b56a29d10fa39969"
+walk-sync@^0.3.3:
+  version "0.3.3"
+  resolved "https://registry.yarnpkg.com/walk-sync/-/walk-sync-0.3.3.tgz#1e9f12cd4fe6e0e6d4a0715b5cc7e30711d43cd1"
   dependencies:
     ensure-posix-path "^1.0.0"
     matcher-collection "^1.0.0"
