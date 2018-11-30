@@ -239,5 +239,39 @@ describe('TreeSync', function() {
         expect(entries.length).to.eql(3);
       });
     });
+
+    describe('validate walk-sync options', function() {
+      it('should ignore files/folders it is told to ignore', function() {
+        // Start with an empty dir
+        expect(walkSync(tmp)).to.deep.equal([]);
+
+        // We need our own treeSync instance with options
+        treeSync = new TreeSync(__dirname + '/fixtures/', tmp, {
+          ignore: ['**/bar']
+        });
+
+        treeSync.sync();
+
+        expect(walkSync(tmp)).to.deep.equal([
+          'one/',
+          'one/foo.txt'
+        ]);
+      });
+
+      it('should only include globs it is told to include', function() {
+        expect(walkSync(tmp)).to.deep.equal([]);
+
+        treeSync = new TreeSync(__dirname + '/fixtures/', tmp, {
+          globs: ['one', 'one/foo.txt']
+        });
+
+        treeSync.sync();
+
+        expect(walkSync(tmp)).to.deep.equal([
+          'one/',
+          'one/foo.txt'
+        ]);
+      });
+    });
   });
 });
