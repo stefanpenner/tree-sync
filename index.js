@@ -67,9 +67,11 @@ TreeSync.prototype.sync = function() {
 
     switch(operation) {
       case 'create' :
-        return fs.writeFileSync(outputFullpath, fs.readFileSync(inputFullpath), { mode: entry.mode });
       case 'change' :
-        return fs.writeFileSync(outputFullpath, fs.readFileSync(inputFullpath), { mode: entry.mode });
+        fs.writeFileSync(outputFullpath, fs.readFileSync(inputFullpath), { mode: entry.mode });
+        fs.utimesSync(outputFullpath, new Date(), entry.mtime / 1e3);
+        return;
+
       case 'mkdir' :
         try {
           return fs.mkdirSync(outputFullpath);
@@ -78,6 +80,7 @@ TreeSync.prototype.sync = function() {
           else { throw e; }
         }
         break;
+
       case 'unlink':
         try {
           return fs.unlinkSync(outputFullpath);
@@ -86,8 +89,10 @@ TreeSync.prototype.sync = function() {
           else { throw e; }
         }
         break;
+
       case 'rmdir':
         return fs.rmdirSync(outputFullpath);
+
       default:
         throw TypeError('Unknown operation:' + operation + ' on path: ' + pathname);
     }
