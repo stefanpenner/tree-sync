@@ -1,6 +1,11 @@
 module.exports = {
   env: {
     mocha: true,
+    node: true,
+    es6: true
+  },
+  parserOptions: {
+    ecmaVersion: 2017
   },
   rules: {
     // JSHint "expr", disabled due to chai expect assertions
