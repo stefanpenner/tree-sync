@@ -26,6 +26,7 @@ module.exports = {
     "semi": [
       2,
       "always"
-    ]
+    ],
+    "no-var": "warn"
   }
 };

@@ -12,6 +12,8 @@ module.exports = {
     'no-unused-expressions': 0,
 
     // JSHint "unused"
-    'no-unused-vars': 0
+    'no-unused-vars': 0,
+
+    'no-var': 'warn'
   }
 };
