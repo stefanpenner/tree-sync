@@ -1,10 +1,10 @@
 'use strict';
 
-var walkSync = require('walk-sync');
-var FSTree = require('fs-tree-diff');
-var mkdirp = require('mkdirp');
-var fs = require('fs');
-var debug = require('debug')('tree-sync');
+const walkSync = require('walk-sync');
+const FSTree = require('fs-tree-diff');
+const mkdirp = require('mkdirp');
+const fs = require('fs');
+const debug = require('debug')('tree-sync');
 
 module.exports = TreeSync;
 
@@ -33,13 +33,13 @@ TreeSync.prototype.sync = function() {
 
   debug('syncing %s -> %s', this._input, this._output);
 
-  var input = FSTree.fromEntries(walkSync.entries(this._input, this._walkSyncOpts));
-  var output = FSTree.fromEntries(walkSync.entries(this._output, this._walkSyncOpts));
+  let input = FSTree.fromEntries(walkSync.entries(this._input, this._walkSyncOpts));
+  let output = FSTree.fromEntries(walkSync.entries(this._output, this._walkSyncOpts));
 
   debug('walked %s %dms and  %s %dms', this._input, input.size, this._output, output.size);
 
-  var isFirstSync = !this._hasSynced;
-  var operations = output.calculatePatch(input).filter(function(operation) {
+  let isFirstSync = !this._hasSynced;
+  let operations = output.calculatePatch(input).filter(function(operation) {
     if (operation[0] === 'change') {
       return isFirstSync;
     } else {
@@ -47,7 +47,7 @@ TreeSync.prototype.sync = function() {
     }
   });
 
-  var inputOperations = this._lastInput.calculatePatch(input).filter(function(operation) {
+  let inputOperations = this._lastInput.calculatePatch(input).filter(function(operation) {
     return operation[0] === 'change';
   });
 
@@ -57,47 +57,51 @@ TreeSync.prototype.sync = function() {
 
   debug('calc operations %d', operations.length);
 
-  operations.forEach(function(patch) {
-    var operation = patch[0];
-    var pathname = patch[1];
-    var entry = patch[2];
+  for (let patch of operations) {
+    const operation = patch[0];
+    const pathname = patch[1];
+    const entry = patch[2];
 
-    var inputFullpath = this._input + '/' + pathname;
-    var outputFullpath = this._output + '/' + pathname;
+    const inputFullpath = this._input + '/' + pathname;
+    const outputFullpath = this._output + '/' + pathname;
 
     switch(operation) {
       case 'create' :
-        return fs.writeFileSync(outputFullpath, fs.readFileSync(inputFullpath), { mode: entry.mode });
       case 'change' :
-        return fs.writeFileSync(outputFullpath, fs.readFileSync(inputFullpath), { mode: entry.mode });
+        fs.writeFileSync(outputFullpath, fs.readFileSync(inputFullpath), { mode: entry.mode });
+        fs.utimesSync(outputFullpath, new Date(), entry.mtime / 1e3);
+        break;
+
       case 'mkdir' :
         try {
-          return fs.mkdirSync(outputFullpath);
+          fs.mkdirSync(outputFullpath);
         } catch(e) {
           if (e && e.code === 'EEXIST') { /* do nothing */ }
           else { throw e; }
         }
         break;
+
       case 'unlink':
         try {
-          return fs.unlinkSync(outputFullpath);
+          fs.unlinkSync(outputFullpath);
         } catch(e) {
           if (e && e.code === 'ENOENT') { /* do nothing */ }
           else { throw e; }
         }
         break;
+
       case 'rmdir':
-        return fs.rmdirSync(outputFullpath);
+        fs.rmdirSync(outputFullpath);
+        break;
+
       default:
         throw TypeError('Unknown operation:' + operation + ' on path: ' + pathname);
     }
-  }, this);
+  }
 
   this._hasSynced = true;
   debug('applied patches: %d', operations.length);
 
   // Return only type and name; don't want downstream relying on entries.
-  return operations.map(function (op) {
-    return op.slice(0,2);
-  });
+  return operations.map(op => op.slice(0,2));
 };

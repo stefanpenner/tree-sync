@@ -1,16 +1,21 @@
-var expect = require('chai').expect;
-var TreeSync = require('../');
-var quickTemp = require('quick-temp');
-var walkSync = require('walk-sync');
-var fs = require('fs');
+const expect = require('chai').expect;
+const TreeSync = require('../');
+const quickTemp = require('quick-temp');
+const walkSync = require('walk-sync');
+const fs = require('fs');
+const path = require('path');
 
 function expectMode(entry, prop,  mode) {
   if (process.platform === 'win32') { return; }
   expect(entry).to.have.deep.property(prop, mode);
 }
 
+const waitAsync = async (ms) => new Promise(r => setTimeout(r, ms));
+
+const sourcePath = __dirname + '/fixtures/';
+
 describe('TreeSync', function() {
-  var tmp;
+  let tmp;
 
   beforeEach(function() {
     tmp = quickTemp.makeOrRemake(this, 'tmpDestDir');
@@ -21,10 +26,10 @@ describe('TreeSync', function() {
   });
 
   describe('fixtures/one', function() {
-    var treeSync;
+    let treeSync;
 
     beforeEach(function() {
-      treeSync = new TreeSync(__dirname + '/fixtures/', tmp);
+      treeSync = new TreeSync(sourcePath, tmp);
     });
 
     describe('nothing -> populated', function() {
@@ -39,6 +44,26 @@ describe('TreeSync', function() {
           'one/bar/bar.txt',
           'one/foo.txt'
         ]);
+      });
+
+      it('validate mtime stays the same', function() {
+        treeSync = new TreeSync(sourcePath, tmp);
+        treeSync.sync();
+        
+        const entries = walkSync.entries(tmp);
+        const originalEntries = walkSync.entries(sourcePath);
+
+        for (let i = 0, len = entries.length; i < len; i++) {
+          const entry = entries[i];
+
+          if (fs.statSync(path.join(entry.basePath, entry.relativePath)).isDirectory())
+            continue;
+
+          const originalEntry = originalEntries
+            .filter(function (x) { return x.relativePath === entry.relativePath; })[0];
+          
+          expect(entry.mtime).to.equal(originalEntry.mtime);
+        }
       });
     });
 
@@ -59,9 +84,8 @@ describe('TreeSync', function() {
       });
     });
 
-
     describe('rmdir operation is sync', function() {
-      var newFolderPath = __dirname + '/fixtures/two';
+      const newFolderPath = __dirname + '/fixtures/two';
 
       beforeEach(function() {
         fs.mkdirSync(newFolderPath);
@@ -73,7 +97,7 @@ describe('TreeSync', function() {
       });
 
       it('immediately reflects deletions', function() {
-        var beforeTree = walkSync(tmp);
+        let beforeTree = walkSync(tmp);
         expect(beforeTree).to.deep.equal([
           'one/',
           'one/bar/',
@@ -83,7 +107,7 @@ describe('TreeSync', function() {
         ]);
 
         treeSync.sync();
-        var afterTree = walkSync(tmp);
+        let afterTree = walkSync(tmp);
 
         expect(afterTree).to.deep.equal([
           'one/',
@@ -99,14 +123,18 @@ describe('TreeSync', function() {
         treeSync.sync(); // setup initial
       });
 
-      it('has stable output (mtime, size, mode, relativePath)', function() {
-        var beforeTree = walkSync.entries(tmp);
+      it('has stable output (mtime, size, mode, relativePath)', async () => {
+        let beforeTree = walkSync.entries(tmp);
 
         expect(beforeTree.length).to.eql(4);
 
+        await waitAsync(10);
+      
+        // build a new `TreeSync` that does not have `lastInput` populated
+        treeSync = new TreeSync(sourcePath, tmp);
         treeSync.sync();
 
-        var afterTree = walkSync.entries(tmp);
+        let afterTree = walkSync.entries(tmp);
 
         expect(afterTree.length).to.eql(4);
         expect(beforeTree).to.deep.equal(afterTree);
@@ -115,11 +143,11 @@ describe('TreeSync', function() {
 
     describe('.sync', function() {
       it('returns a list of changed files', function() {
-        var beforeTree = walkSync.entries(tmp);
+        let beforeTree = walkSync.entries(tmp);
 
         expect(beforeTree.length).to.eql(0);
 
-        var changes = treeSync.sync();
+        let changes = treeSync.sync();
 
         expect(changes).to.eql([
           ['mkdir',   'one/'],
@@ -131,7 +159,7 @@ describe('TreeSync', function() {
     });
 
     describe('input(same) -> input(same + newFile)', function() {
-      var newFilePath = __dirname + '/fixtures/one/added-file.js';
+      let newFilePath = __dirname + '/fixtures/one/added-file.js';
 
       beforeEach(function() {
         treeSync.sync(); // setup initial
@@ -142,19 +170,19 @@ describe('TreeSync', function() {
       });
 
       it('has stable output (mtime, size, mode, relativePath)', function() {
-        var beforeTree = walkSync.entries(tmp);
+        let beforeTree = walkSync.entries(tmp);
 
         expect(beforeTree.length).to.eql(4);
 
         fs.writeFileSync(newFilePath, 'OMG', { mode: 33152 } ); // add file
         treeSync.sync();
 
-        var afterTree = walkSync.entries(tmp);
+        let afterTree = walkSync.entries(tmp);
 
         expect(afterTree.length).to.eql(5);
         expect(beforeTree).to.not.deep.equal(afterTree);
 
-        var addedEntry = afterTree.filter(function(entry) {
+        let addedEntry = afterTree.filter(function(entry) {
           return entry['relativePath'] === 'one/added-file.js';
         })[0];
 
@@ -168,8 +196,8 @@ describe('TreeSync', function() {
     });
 
     describe('output populated -> input with a changed file', function() {
-      var changeFilePath = __dirname + '/fixtures/one/foo.txt';
-      var originalValue, initialTree;
+      const changeFilePath = __dirname + '/fixtures/one/foo.txt';
+      let originalValue, initialTree;
 
       beforeEach(function() {
         originalValue = fs.readFileSync(changeFilePath, { encoding: 'utf8' });
@@ -184,7 +212,7 @@ describe('TreeSync', function() {
         fs.writeFileSync(changeFilePath, 'OMG');
 
         // build a new `TreeSync` that does not have `lastInput` populated
-        treeSync = new TreeSync(__dirname + '/fixtures/', tmp);
+        treeSync = new TreeSync(sourcePath, tmp);
 
         treeSync.sync();
       });
@@ -194,12 +222,12 @@ describe('TreeSync', function() {
       });
 
       it('should update changed files on initial build', function() {
-        var afterTree = walkSync.entries(tmp);
+        let afterTree = walkSync.entries(tmp);
 
         // tree should be updated with OMG in one/foo.txt
         expect(initialTree).to.not.deep.equal(afterTree);
 
-        var contents = fs.readFileSync(tmp + '/one/foo.txt', { encoding: 'utf8'} );
+        let contents = fs.readFileSync(tmp + '/one/foo.txt', { encoding: 'utf8'} );
         expect(contents).to.equal('OMG');
 
         // sync again to ensure stablity after synced
@@ -210,8 +238,9 @@ describe('TreeSync', function() {
     });
 
     describe('input(same) -> input(same - file)', function() {
-      var removedFilePath = __dirname + '/fixtures/one/foo.txt';
-      var removedFileContent = fs.readFileSync(removedFilePath);
+      const removedFilePath = __dirname + '/fixtures/one/foo.txt';
+      let removedFileContent = fs.readFileSync(removedFilePath);
+      let removedFileStat = fs.statSync(removedFilePath);
 
       beforeEach(function() {
         treeSync.sync();                // setup initial
@@ -221,10 +250,11 @@ describe('TreeSync', function() {
 
       afterEach(function() {
         fs.writeFileSync(removedFilePath, removedFileContent);
+        fs.utimesSync(removedFilePath, removedFileStat.atime, removedFileStat.mtime);
       });
 
       it('has stable output (mtime, size, mode, relativePath)', function() {
-        var entries = walkSync.entries(tmp);
+        let entries = walkSync.entries(tmp);
 
         expect(entries).to.have.deep.property('0.relativePath', 'one/');
 
@@ -246,7 +276,7 @@ describe('TreeSync', function() {
         expect(walkSync(tmp)).to.deep.equal([]);
 
         // We need our own treeSync instance with options
-        treeSync = new TreeSync(__dirname + '/fixtures/', tmp, {
+        treeSync = new TreeSync(sourcePath, tmp, {
           ignore: ['**/bar']
         });
 
@@ -261,7 +291,7 @@ describe('TreeSync', function() {
       it('should only include globs it is told to include', function() {
         expect(walkSync(tmp)).to.deep.equal([]);
 
-        treeSync = new TreeSync(__dirname + '/fixtures/', tmp, {
+        treeSync = new TreeSync(sourcePath, tmp, {
           globs: ['one', 'one/foo.txt']
         });
 
