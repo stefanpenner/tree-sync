@@ -6,7 +6,7 @@ A module for repeated efficient synchronizing two directories.
 // input/a/{a.js,b.js}
 // output/
 
-var tree = new TreeSync('input', 'output');
+const tree = new TreeSync('input', 'output');
 tree.sync();
 // output is now contains copies of everything that is in input
 
@@ -30,7 +30,7 @@ Under the hood, this library uses [walk-sync](https://github.com/joliss/node-wal
 //   bar/
 //     foo-bar.js
 
-var tree = new TreeSync('input', 'output', {
+const tree = new TreeSync('input', 'output', {
   ignore: ['**/b']
 });
 tree.sync();
@@ -48,7 +48,7 @@ tree.sync();
 //   bar/
 //     foo-bar.js
 
-var tree = new TreeSync('input', 'output', {
+const tree = new TreeSync('input', 'output', {
   globs: ['foo', 'foo/bar.js']
 });
 tree.sync();
