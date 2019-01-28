@@ -49,7 +49,7 @@ describe('TreeSync', function() {
       it('validate mtime stays the same', function() {
         treeSync = new TreeSync(sourcePath, tmp);
         treeSync.sync();
-        
+
         const entries = walkSync.entries(tmp);
         const originalEntries = walkSync.entries(sourcePath);
 
@@ -60,8 +60,8 @@ describe('TreeSync', function() {
             continue;
 
           const originalEntry = originalEntries
-            .filter(function (x) { return x.relativePath === entry.relativePath; })[0];
-          
+            .find(x => x.relativePath === entry.relativePath);
+
           expect(entry.mtime).to.equal(originalEntry.mtime);
         }
       });
@@ -129,7 +129,7 @@ describe('TreeSync', function() {
         expect(beforeTree.length).to.eql(4);
 
         await waitAsync(10);
-      
+
         // build a new `TreeSync` that does not have `lastInput` populated
         treeSync = new TreeSync(sourcePath, tmp);
         treeSync.sync();
@@ -182,9 +182,7 @@ describe('TreeSync', function() {
         expect(afterTree.length).to.eql(5);
         expect(beforeTree).to.not.deep.equal(afterTree);
 
-        let addedEntry = afterTree.filter(function(entry) {
-          return entry['relativePath'] === 'one/added-file.js';
-        })[0];
+        let addedEntry = afterTree.find(entry => entry['relativePath'] === 'one/added-file.js');
 
         expectMode(addedEntry, 'mode', 33152);
         expect(addedEntry).to.have.property('relativePath', 'one/added-file.js');
