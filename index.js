@@ -32,12 +32,12 @@ module.exports = class TreeSync {
 
     debug('syncing %s -> %s', this._input, this._output);
 
-    let input = FSTree.fromEntries(walkSync.entries(this._input, this._walkSyncOpts));
-    let output = FSTree.fromEntries(walkSync.entries(this._output, this._walkSyncOpts));
+    const input = FSTree.fromEntries(walkSync.entries(this._input, this._walkSyncOpts));
+    const output = FSTree.fromEntries(walkSync.entries(this._output, this._walkSyncOpts));
 
     debug('walked %s %dms and  %s %dms', this._input, input.size, this._output, output.size);
 
-    let isFirstSync = !this._hasSynced;
+    const isFirstSync = !this._hasSynced;
     let operations = output.calculatePatch(input).filter(operation => {
       if (operation[0] === 'change') {
         return isFirstSync;
@@ -46,7 +46,7 @@ module.exports = class TreeSync {
       }
     });
 
-    let inputOperations = this._lastInput.calculatePatch(input).filter(operation => {
+    const inputOperations = this._lastInput.calculatePatch(input).filter(operation => {
       return operation[0] === 'change';
     });
 
@@ -56,24 +56,24 @@ module.exports = class TreeSync {
 
     debug('calc operations %d', operations.length);
 
-    for (let patch of operations) {
+    for (const patch of operations) {
       const operation = patch[0];
       const pathname = patch[1];
       const entry = patch[2];
 
-      const inputFullpath = this._input + '/' + pathname;
-      const outputFullpath = this._output + '/' + pathname;
+      const inputFullPath = this._input + '/' + pathname;
+      const outputFullPath = this._output + '/' + pathname;
 
       switch(operation) {
         case 'create' :
         case 'change' :
-          fs.writeFileSync(outputFullpath, fs.readFileSync(inputFullpath), { mode: entry.mode });
-          fs.utimesSync(outputFullpath, new Date(), entry.mtime / 1e3);
+          fs.writeFileSync(outputFullPath, fs.readFileSync(inputFullPath), { mode: entry.mode });
+          fs.utimesSync(outputFullPath, new Date(), entry.mtime / 1e3);
           break;
 
         case 'mkdir' :
           try {
-            fs.mkdirSync(outputFullpath);
+            fs.mkdirSync(outputFullPath);
           } catch(e) {
             if (e && e.code === 'EEXIST') { /* do nothing */ }
             else { throw e; }
@@ -82,7 +82,7 @@ module.exports = class TreeSync {
 
         case 'unlink':
           try {
-            fs.unlinkSync(outputFullpath);
+            fs.unlinkSync(outputFullPath);
           } catch(e) {
             if (e && e.code === 'ENOENT') { /* do nothing */ }
             else { throw e; }
@@ -90,7 +90,7 @@ module.exports = class TreeSync {
           break;
 
         case 'rmdir':
-          fs.rmdirSync(outputFullpath);
+          fs.rmdirSync(outputFullPath);
           break;
 
         default:
