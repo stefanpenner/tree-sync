@@ -1,0 +1,30 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - master
+      - 'v*' # older version branches
+    tags:
+      - '*'
+  pull_request: {}
+
+jobs:
+  test:
+    name: Tests
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      matrix:
+        node: ['8', '10', '12', '14']
+        os: [ubuntu-latest, macOS-latest, windows-latest]
+
+    steps:
+    - uses: actions/checkout@v1
+    - uses: volta-cli/action@v1
+      with:
+        node-version: ${{ matrix.node }}
+    - name: install dependencies
+      run: yarn
+    - name: test
+      run: yarn test

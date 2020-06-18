@@ -1,4 +1,4 @@
-# TreeSync [![Build Status](https://travis-ci.org/stefanpenner/tree-sync.svg?branch=master)](https://travis-ci.org/stefanpenner/tree-sync) [![Build status](https://ci.appveyor.com/api/projects/status/7136sbfmybx6q7w2?svg=true)](https://ci.appveyor.com/project/embercli/tree-sync)
+# TreeSync ![CI](https://github.com/stefanpenner/tree-sync/workflows/CI/badge.svg)
 
 A module for repeated efficient synchronizing two directories.
 
