@@ -1,13 +1,6 @@
 'use strict';
 
-let glob = require('glob').sync;
+const glob = require('glob').sync;
+const paths = glob('tests/*').filter(path => !/fixtures/.test(path));
 
-let paths = glob('tests/*').filter(function(path) {
-  return !/fixtures/.test(path);
-});
-
-paths = paths.concat([
-  'index.js'
-]);
-
-require('mocha-eslint')(paths);
+require('mocha-eslint')(paths.concat(['index.js']));

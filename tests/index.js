@@ -1,3 +1,5 @@
+'use strict';
+
 const expect = require('chai').expect;
 const TreeSync = require('../');
 const quickTemp = require('quick-temp');
